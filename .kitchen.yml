@@ -1,0 +1,47 @@
+---
+driver:
+  name: vagrant
+
+platforms:
+  - name: ubuntu-14.04
+
+provisioner:
+  name: chef_solo
+
+verifier:
+  name: inspec
+
+suites:
+  - name: default
+    run_list:
+      - recipe[apt]
+      - recipe[cfssl::server]
+      - recipe[cfssl::client]
+    attributes:
+      cfssl:
+        server:
+          generate: true
+          csr:
+            hosts:
+              - "pki.example.com"
+            key:
+              algo: "rsa"
+              size: 2048
+            names:
+              -
+                C: "US"
+                L: "New York"
+                O: "Example, LLC"
+                OU: "Server"
+
+        client:
+          server_url: http://127.0.0.1:8888
+          subject:
+            names:
+              - C: US
+                L: New York
+                O: Example, LLC
+                OU: Test
+          cert: /tmp/cert.pem
+          key: /tmp/key.pem
+          shared_key: 0123456789ABCDEF0123456789ABCDEF

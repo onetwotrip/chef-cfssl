@@ -1,0 +1,9 @@
+#!/bin/sh
+exec 2>&1
+
+# -labels cloud -labels tests
+
+[ -d env ] && setenv="-e $(pwd)/env"
+
+exec chpst $setenv cfssl -loglevel 0 serve -ca-key <%= node['cfssl']['server']['ca-key'] %> -ca <%= node['cfssl']['server']['ca'] %> -config <%= node['cfssl']['server']['config-file'] %>
+
