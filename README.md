@@ -47,6 +47,28 @@ Ubuntu 14.04
 
 Use wrapper cookbook for getting certs in place, pass your config in attribute hash (node['cfssl']['server']['config'])
 
+Example for use with authsign:
+```
+{
+  'signing' => {
+    'default' => {
+      'usages' => [
+        'any'
+      ],
+      'expiry' => '10h',
+      'auth_key' => 'ca-auth'
+
+    }
+  },
+  'auth_keys' => {
+    'ca-auth' => {
+      'type' => 'standard',
+      'key' => '0123456789ABCDEF0123456789ABCDEF'
+    }
+  }
+}
+```
+
 You can use ['cfssl']['server']['csr'] to have cookbook generate certs for you
 
 ### cfssl::client

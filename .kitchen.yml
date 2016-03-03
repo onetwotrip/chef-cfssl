@@ -20,7 +20,17 @@ suites:
     attributes:
       cfssl:
         server:
-          generate: true
+          config:
+            signing:
+              default:
+                usages:
+                  - "any"
+                expiry: "10h"
+                auth_key: "ca-auth"
+            auth_keys:
+              ca-auth:
+                type: "standard"
+                key: "0123456789ABCDEF0123456789ABCDEF"
           csr:
             hosts:
               - "pki.example.com"
@@ -45,3 +55,41 @@ suites:
           cert: /tmp/cert.pem
           key: /tmp/key.pem
           shared_key: 0123456789ABCDEF0123456789ABCDEF
+
+  - name: noauth
+    run_list:
+      - recipe[apt]
+      - recipe[cfssl::server]
+      - recipe[cfssl::client]
+    attributes:
+      cfssl:
+        server:
+          config:
+            signing:
+              default:
+                usages:
+                  - "any"
+                expiry: "11h"
+          csr:
+            hosts:
+              - "pki.example.com"
+            key:
+              algo: "rsa"
+              size: 2048
+            names:
+              -
+                C: "US"
+                L: "New York"
+                O: "Example, LLC"
+                OU: "Server"
+
+        client:
+          server_url: http://127.0.0.1:8888
+          subject:
+            names:
+              - C: US
+                L: New York
+                O: Example, LLC
+                OU: Test
+          cert: /tmp/cert.pem
+          key: /tmp/key.pem

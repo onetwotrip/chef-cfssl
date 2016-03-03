@@ -1,10 +1,6 @@
 #
 # Cookbook Name:: cfssl
-# Recipe:: default
-#
-# Copyright (C) 2016 Twiket Ltd
-#
-# All rights reserved - Do Not Redistribute
+# Recipe:: server
 #
 
 include_recipe 'cfssl::install' if node['cfssl']['install']
@@ -24,7 +20,7 @@ execute 'initca' do
   not_if node['cfssl']['server']['csr'].nil?
 end
 
-file 'config.json' do
+file node['cfssl']['server']['config-file'] do
   action :create
   owner 'root'
   group 'root'
@@ -35,4 +31,7 @@ end
 
 include_recipe 'runit'
 
-runit_service 'cfssl'
+runit_service 'cfssl' do
+  restart_on_update true
+  subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]", :immediately
+end

@@ -1,3 +1,7 @@
+#
+# Cookbook Name:: cfssl
+# Recipe:: server
+#
 
 if node['cfssl']['repo']
   repo = node['cfssl']['repo']
