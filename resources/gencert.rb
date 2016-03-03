@@ -8,7 +8,7 @@ attribute :hostname, kind_of: String, required: false,
                      default: node['ipaddress']
 attribute :subject, kind_of: Hash, required: true
 
-# Should be HEX, enables use of authsign
+# MUST be HEX, enables use of authsign
 attribute :shared_key, kind_of: String, required: false
 
 load_current_value do
