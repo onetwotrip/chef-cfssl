@@ -20,6 +20,8 @@ execute 'initca' do
   not_if node['cfssl']['server']['csr'].nil?
 end
 
+include_recipe 'runit'
+
 file node['cfssl']['server']['config-file'] do
   action :create
   owner 'root'
@@ -29,9 +31,7 @@ file node['cfssl']['server']['config-file'] do
   content JSON.pretty_generate(node['cfssl']['server']['config'])
 end
 
-include_recipe 'runit'
-
 runit_service 'cfssl' do
   restart_on_update true
-  subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]", :immediately
+  subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]"
 end
