@@ -46,6 +46,7 @@ Ubuntu 14.04
 ### cfssl::server
 
 Use wrapper cookbook for getting certs in place, pass your config in attribute hash (node['cfssl']['server']['config'])
+
 You can use ['cfssl']['server']['csr'] to have cookbook generate certs for you
 
 ### cfssl::client
