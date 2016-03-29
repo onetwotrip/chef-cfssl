@@ -3,9 +3,14 @@ default_action :create
 
 attribute :key_path, kind_of: String, required: true
 attribute :cert_path, kind_of: String, required: true
+attribute :bundle, kind_of: [TrueClass, FalseClass], required: false,
+                   default: true
+attribute :ca_path, kind_of: String, required: false
 attribute :server, kind_of: String, required: true
+attribute :profile, kind_of: String, required: false,
+                    default: 'default'
 attribute :hostname, kind_of: String, required: false,
-                     default: node['ipaddress']
+                     default: nil
 attribute :subject, kind_of: Hash, required: true
 
 # MUST be HEX, enables use of authsign

@@ -12,12 +12,15 @@ directory node['cfssl']['server']['config-directory'] do
   action :create
 end
 
-execute 'initca' do
-  cwd node['cfssl']['server']['config-directory']
-  command "echo '#{JSON.generate(node['cfssl']['server']['csr'])}'" \
-    ' | cfssl genkey -initca - | cfssljson -bare ca'
-  creates node['cfssl']['server']['config-directory'] + 'ca.pem'
-  not_if node['cfssl']['server']['csr'].nil?
+if node['cfssl']['server']['csr']
+  execute 'initca' do
+    cwd node['cfssl']['server']['config-directory']
+    command "echo '#{JSON.generate(node['cfssl']['server']['csr'])}'" \
+      ' | cfssl genkey -initca - | cfssljson -bare ca'
+    creates node['cfssl']['server']['config-directory'] + 'ca.pem'
+    only_if { node['cfssl']['server']['csr'] }
+    notifies :restart, 'runit_service[cfssl]'
+  end
 end
 
 include_recipe 'runit'
@@ -33,5 +36,6 @@ end
 
 runit_service 'cfssl' do
   restart_on_update true
+  # {"driver":"sqlite3","data_source":"certs.db"}
   subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]"
 end
