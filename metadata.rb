@@ -9,5 +9,8 @@ version          '0.2.0'
 issues_url       'https://github.com/onetwotrip/chef-cfssl/issues'
 source_url       'https://github.com/onetwotrip/chef-cfssl'
 
+chef_version '>= 12'
+supports 'ubuntu'
+
 depends 'apt'
 depends 'runit'
