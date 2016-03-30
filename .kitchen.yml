@@ -54,6 +54,7 @@ suites:
                 OU: Test
           cert: /tmp/cert.pem
           key: /tmp/key.pem
+          ca: /tmp/ca.pem
           shared_key: 0123456789ABCDEF0123456789ABCDEF
 
   - name: noauth
@@ -93,3 +94,4 @@ suites:
                 OU: Test
           cert: /tmp/cert.pem
           key: /tmp/key.pem
+          ca: /tmp/ca.pem
