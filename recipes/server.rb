@@ -36,6 +36,5 @@ end
 
 runit_service 'cfssl' do
   restart_on_update true
-  # {"driver":"sqlite3","data_source":"certs.db"}
   subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]"
 end
