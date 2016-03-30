@@ -6,6 +6,7 @@ cfssl_gencert 'default' do
   cert_path node['cfssl']['client']['cert']
   ca_path node['cfssl']['client']['ca']
   subject node['cfssl']['client']['subject']
+  bundle false
   server node['cfssl']['client']['server_url']
   shared_key node['cfssl']['client']['shared_key']
 end
