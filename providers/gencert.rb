@@ -113,6 +113,7 @@ end
 
 def host_addresses
   addresses = node['network']['interfaces'].keys.map do |iface_name|
+    next unless node['network']['interfaces'][iface_name]['addresses']
     node['network']['interfaces'][iface_name]['addresses'].keys.select do |k|
       k.match('\.')
     end
