@@ -3,6 +3,6 @@ default['cfssl']['repo'] = {
   arch: 'amd64',
   distribution: 'trusty',
   components: ['main'],
-  key: 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray'
+  key: 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray',
 }
 default['cfssl']['install'] = true

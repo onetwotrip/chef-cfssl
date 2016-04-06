@@ -9,7 +9,7 @@ version          '0.2.0'
 issues_url       'https://github.com/onetwotrip/chef-cfssl/issues'
 source_url       'https://github.com/onetwotrip/chef-cfssl'
 
-chef_version ">= 12.0" if respond_to?(:chef_version)
+chef_version '>= 12.0' if respond_to?(:chef_version)
 supports 'ubuntu'
 
 depends 'apt'

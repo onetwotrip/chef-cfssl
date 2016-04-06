@@ -48,7 +48,7 @@ def cfssl_request(uri, request_body)
   req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
   req.body = request_body
   res = Net::HTTP.start(uri.hostname, uri.port,
-    :use_ssl => uri.scheme == 'https').request(req)
+                        use_ssl: uri.scheme == 'https').request(req)
   JSON.parse res.body
 end
 
@@ -132,9 +132,8 @@ def digest
 end
 
 def shared_key
-  if new_resource.shared_key
-    new_resource.shared_key.scan(/../).map { |x| x.hex.chr }.join
-  end
+  return nil unless new_resource.shared_key
+  new_resource.shared_key.scan(/../).map { |x| x.hex.chr }.join
 end
 
 action :delete do
