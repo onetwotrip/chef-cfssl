@@ -15,19 +15,18 @@ action :create do
 
   file "#{subject}.cert" do
     action :create
-    owner 'root'
-    group 'root'
-    mode '0600'
-    sensitive true
+    owner file_owner
+    group file_group
+    mode '0644'
     path cert_path
     content bundle ? cert + ca : cert
   end
 
   file "#{subject}.key" do
     action :create
-    owner 'root'
-    group 'root'
-    mode '0600'
+    owner file_owner
+    group file_group
+    mode file_mode
     sensitive true
     path key_path
     content key.to_pem
@@ -35,10 +34,9 @@ action :create do
 
   file "#{subject}.ca.cert" do
     action :create
-    owner 'root'
-    group 'root'
-    mode '0600'
-    sensitive true
+    owner file_owner
+    group file_group
+    mode '0644'
     path ca_path
     content ca
   end
@@ -109,6 +107,18 @@ end
 
 def bundle
   new_resource.bundle
+end
+
+def file_owner
+  new_resource.owner
+end
+
+def file_group
+  new_resource.group
+end
+
+def file_mode
+  new_resource.mode
 end
 
 def host_addresses
