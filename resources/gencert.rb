@@ -12,6 +12,9 @@ attribute :profile, kind_of: String, required: false,
 attribute :hostname, kind_of: String, required: false,
                      default: nil
 attribute :subject, kind_of: Hash, required: true
+attribute :owner, kind_of: [String, Integer], required: false, default: 'root'
+attribute :group, kind_of: [String, Integer], required: false, default: 'root'
+attribute :mode, kind_of: [String, Integer], required: false, default: '0600'
 
 # MUST be HEX, enables use of authsign
 attribute :shared_key, kind_of: String, required: false
