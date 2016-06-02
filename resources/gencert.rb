@@ -23,19 +23,12 @@ require 'openssl'
 require 'uri'
 
 action :create do
-  uri = make_uri(sign_method)
-  cert = cfssl_request(uri, body)['result']['certificate'] ||
-         Chef::Log.error("Unable to get cert from #{uri}")
-
-  uri = make_uri('info')
-  ca = cfssl_request(uri, { label: profile }.to_json)['result']['certificate']
-
   file cert_path do
     action :create
     owner new_resource.owner
     group new_resource.group
     mode '0644'
-    content bundle ? cert + ca : cert
+    content bundle ? [cert, ca].join("\n") : cert
   end
 
   file key_path do
@@ -54,6 +47,18 @@ action :create do
     mode '0644'
     content ca
   end
+end
+
+def cert
+  uri = make_uri(sign_method)
+  @cert ||= cfssl_request(uri, body)['result']['certificate'].chomp ||
+            Chef::Log.error("Unable to get cert from #{uri}")
+end
+
+def ca
+  uri = make_uri('info')
+  @ca ||= cfssl_request(uri, { label: profile }.to_json)['result']['certificate'].chomp ||
+          Chef::Log.error("Unable to get ca from #{uri}")
 end
 
 def cfssl_request(uri, request_body)
