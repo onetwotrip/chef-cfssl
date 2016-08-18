@@ -8,11 +8,13 @@ property :bundle, [TrueClass, FalseClass], required: false, default: true
 property :ca_path, String, required: false
 property :server, String, required: true
 property :profile, String, required: false, default: 'default'
-property :hostname, String, required: false, default: nil
+property :hostname, String, required: false, default: node.name
 property :subject, Hash, required: true
 property :owner, [String, Integer], required: false, default: 'root'
 property :group, [String, Integer], required: false, default: 'root'
 property :mode, [String, Integer], required: false, default: '0600'
+property :last_ttl, Integer, default: 2629746 # 1 Month
+
 
 # MUST be HEX, enables use of authsign
 property :shared_key, kind_of: String, required: false
@@ -23,29 +25,32 @@ require 'openssl'
 require 'uri'
 
 action :create do
-  file cert_path do
-    action :create
-    owner new_resource.owner
-    group new_resource.group
-    mode '0644'
-    content bundle ? [cert, ca].join("\n") : cert
-  end
+  if !check_cert(cert_path, ca_path, last_ttl)
+    file cert_path do
+      action :create
+      owner new_resource.owner
+      group new_resource.group
+      mode '0644'
+      content bundle ? [cert, ca].join("\n") : cert
+    end
 
-  file key_path do
-    action :create
-    owner new_resource.owner
-    group new_resource.group
-    mode new_resource.mode
-    sensitive true
-    content key.to_pem
-  end
+    file key_path do
+      action :create
+      owner new_resource.owner
+      group new_resource.group
+      mode new_resource.mode
+      sensitive true
+      content key.to_pem
+    end
 
-  file ca_path do
-    action :create
-    owner new_resource.owner
-    group new_resource.group
-    mode '0644'
-    content ca
+    file ca_path do
+      action :create
+      owner new_resource.owner
+      group new_resource.group
+      mode '0644'
+      content ca
+    end
+    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -123,6 +128,23 @@ end
 def decoded_shared_key
   return nil unless shared_key
   shared_key.scan(/../).map { |x| x.hex.chr }.join
+end
+
+def check_cert(cert,ca_path, last_ttl)
+  if ::File.exist?(cert)
+    not_after = OpenSSL::X509::Certificate.new(::File.read(cert)).not_after
+    ca_cert_host = ::File.read(ca_path)
+    ca_cert_server = ca
+
+    if (Time.now.to_i+last_ttl) >= not_after.to_time.to_i || ca_cert_host != ca_cert_server
+      Chef::Log.warn("Certificate #{cert} expire: #{not_after}")
+      Chef::Log.warn("Host CA certificate: #{ca_cert_host}")
+      Chef::Log.warn("Server CA certificate: #{ca_cert_server}")
+      return false
+    else
+      return true
+    end
+  end
 end
 
 action :delete do
