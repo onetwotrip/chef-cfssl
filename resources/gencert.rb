@@ -56,8 +56,16 @@ end
 
 def cert
   uri = make_uri(sign_method)
-  @cert ||= cfssl_request(uri, body)['result']['certificate'].chomp ||
-            Chef::Log.error("Unable to get cert from #{uri}")
+  response = cfssl_request(uri, body)
+  if response['errors'].size > 0
+    response.errors.each do |error|
+      Chef::Log.error("Response error: #{error}")
+    end
+    Chef::Log.error("Uri: #{uri}")
+    Chef::Log.error("Body: #{body}")
+    raise
+  end
+  @cert = response['result']['certificate'].chomp 
 end
 
 def ca
