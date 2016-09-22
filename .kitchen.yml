@@ -14,7 +14,6 @@ verifier:
 suites:
   - name: default
     run_list:
-      - recipe[apt]
       - recipe[cfssl::server]
       - recipe[cfssl::client]
     attributes:
@@ -59,7 +58,6 @@ suites:
 
   - name: noauth
     run_list:
-      - recipe[apt]
       - recipe[cfssl::server]
       - recipe[cfssl::client]
     attributes:
