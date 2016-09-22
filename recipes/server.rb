@@ -34,7 +34,8 @@ file node['cfssl']['server']['config-file'] do
   content JSON.pretty_generate(node['cfssl']['server']['config'])
 end
 
-runit_service 'cfssl' do
+runit_service node['cfssl']['server']['runit']['service'] do
   restart_on_update true
+  cookbook node['cfssl']['server']['runit']['cookbook']
   subscribes :restart, "file[#{node['cfssl']['server']['config-file']}]"
 end
