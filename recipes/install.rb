@@ -3,17 +3,9 @@
 # Recipe:: server
 #
 
-if node['cfssl']['repo']
-  repo = node['cfssl']['repo']
-  apt_repository 'cfssl' do
-    uri repo['uri']
-    arch repo['arch']
-    distribution repo['distribution']
-    components repo['components']
-    key repo['key']
-  end
-end
+include_recipe "build-essential"
+include_recipe "golang"
 
-package 'cfssl' do
-  action :install
+node['cfssl']['packages'].each do |go_pak|
+  golang_package go_pak
 end
