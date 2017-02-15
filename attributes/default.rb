@@ -6,3 +6,4 @@ default['cfssl']['repo'] = {
   key: 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray',
 }
 default['cfssl']['install'] = true
+
