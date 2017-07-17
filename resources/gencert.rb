@@ -8,13 +8,15 @@ property :bundle, [TrueClass, FalseClass], required: false, default: true
 property :ca_path, String, required: false
 property :server, String, required: true
 property :profile, String, required: false, default: 'default'
-property :hostname, String, required: false, default: node.name
+property :hosts, [Array, String], required: false, default: [node.name]
 property :subject, Hash, required: true
 property :owner, [String, Integer], required: false, default: 'root'
 property :group, [String, Integer], required: false, default: 'root'
 property :mode, [String, Integer], required: false, default: '0600'
 property :last_ttl, Integer, default: 2629746 # 1 Month
 
+# Deprecated options
+property :hostname, String, required: false
 
 # MUST be HEX, enables use of authsign
 property :shared_key, kind_of: String, required: false
@@ -25,6 +27,7 @@ require 'openssl'
 require 'uri'
 
 action :create do
+  hosts = handle_hosts(new_resource)
   if !check_cert(cert_path, ca_path, last_ttl)
     file cert_path do
       action :create
@@ -87,7 +90,7 @@ def body
     'certificate_request' => csr,
     'profile' => profile,
     'subject' => subject }
-  body['hosts'] = hostname ? [hostname] : host_addresses
+  body['hosts'] = hosts
   body = encrypt(body.to_json) if shared_key
   body.to_json
 end
@@ -157,4 +160,17 @@ action :delete do
   file ca_path do
     action :delete
   end
+end
+
+def handle_hosts(new_resource)
+  opts = if new_resource.hosts.is_a?(Array)
+           new_resource.hosts.dup
+         else
+           new_resource.hosts.split
+         end
+  if new_resource.hostname
+    Chef::Log.deprecation("The hostname resource property is deprecated.  Use the hosts property instead to set this value")
+    opts = new_resource.hostname
+  end
+  opts
 end
